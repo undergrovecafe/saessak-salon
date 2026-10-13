@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important} body{margin:0} :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<title>새싹살롱 진행판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one-column host console — sticky header + tab strip, one panel per stage of the evening */
+:root {
+  --bg: #f3f6ef;
+  --surface: #ffffff;
+  --ink: #1d2a1e;
+  --muted: #5d6b5e;
+  --line: #d6e1cb;
+  --forest: #2c5f2d;
+  --moss: #8db35a;
+  --leaf-soft: #e6efdb;
+  --water: #3d7fa6;
+  --water-soft: #e1edf4;
+  --warn: #b5532f;
+  --on-forest: #ffffff;
+  --display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121a13; --surface: #1a251b; --ink: #e8efe2; --muted: #9fb09f; --line: #2d3d2e;
+    --forest: #7fb069; --moss: #a6cf74; --leaf-soft: #223322; --water: #7db7da; --water-soft: #1b2b35;
+    --warn: #e08a63; --on-forest: #0f1a10; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121a13; --surface: #1a251b; --ink: #e8efe2; --muted: #9fb09f; --line: #2d3d2e;
+  --forest: #7fb069; --moss: #a6cf74; --leaf-soft: #223322; --water: #7db7da; --water-soft: #1b2b35;
+  --warn: #e08a63; --on-forest: #0f1a10; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; }
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: baseline; gap: 10px; padding-block: 14px 6px; }
+.brand h1 { font-family: var(--display); font-size: 24px; margin: 0; color: var(--forest); }
+.brand span { color: var(--muted); font-size: 13px; letter-spacing: .04em; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+nav.tabs button { flex: 0 0 auto; border: 0; background: transparent; color: var(--muted); font: 500 14px var(--body); padding: 8px 12px; border-radius: 999px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { background: var(--forest); color: var(--on-forest); }
+nav.tabs button:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--water); outline-offset: 2px; }
+section.panel { padding-top: 20px; display: grid; gap: 16px; }
+h2 { font-family: var(--display); font-size: 21px; margin: 0; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0; max-width: 62ch; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 500 14px var(--body); padding: 9px 14px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--forest); border-color: var(--forest); color: var(--on-forest); }
+.btn.water { background: var(--water); border-color: var(--water); color: var(--on-forest); }
+.btn.danger { color: var(--warn); border-color: var(--warn); }
+.btn:disabled { opacity: .45; cursor: default; }
+input, select { font: 15px var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; min-width: 0; }
+.tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--leaf-soft); color: var(--forest); font-weight: 500; }
+.tag.f { background: #f6e3dc; color: #9a4528; }
+:root[data-theme="dark"] .tag.f { background: #3a2620; color: #f0a68a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.f { background: #3a2620; color: #f0a68a; } }
+.note { font-size: 13px; color: var(--muted); }
+.example { font-size: 12px; color: var(--warn); font-weight: 500; }
+
+/* people */
+.people { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.person { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.person b { font-weight: 700; }
+.x { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; }
+
+/* timer */
+.timer { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.clock { font-family: var(--mono); font-size: clamp(64px, 18vw, 120px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--forest); }
+.clock.done { color: var(--warn); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .clock.done { animation: none; } }
+.roundlabel { font-size: 14px; color: var(--muted); letter-spacing: .06em; }
+.tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.table h3 { margin: 0 0 10px; font-size: 14px; color: var(--muted); font-weight: 500; letter-spacing: .06em; }
+.pair { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px dashed var(--line); }
+.pair:first-of-type { border-top: 0; }
+.pair .mid { color: var(--moss); font-size: 13px; }
+.pair .r { text-align: right; }
+.rest { color: var(--muted); font-style: italic; }
+
+/* games */
+.decks { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.deck { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px; cursor: pointer; color: var(--ink); font: inherit; }
+.deck[aria-pressed="true"] { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); }
+.deck strong { display: block; font-family: var(--display); font-size: 17px; }
+.deck small { color: var(--muted); }
+.card { min-height: 180px; display: grid; place-items: center; text-align: center; background: var(--forest); color: var(--on-forest); border-radius: 18px; padding: 24px; }
+.card p { font-family: var(--display); font-size: clamp(22px, 5vw, 32px); margin: 0; text-wrap: balance; }
+.card .vs { display: block; font-family: var(--body); font-size: 15px; opacity: .8; margin: 6px 0; }
+
+/* signals */
+.drops { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.drop { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--surface); display: grid; gap: 6px; }
+.drop .count { font-family: var(--mono); font-size: 26px; color: var(--water); font-variant-numeric: tabular-nums; }
+.drop .row { justify-content: space-between; }
+
+/* results */
+.couple { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; border-radius: 12px; background: var(--leaf-soft); flex-wrap: wrap; }
+.couple .names { font-family: var(--display); font-size: 20px; }
+.status { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
+.status div { font-size: 13px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.status .ok { border-color: var(--moss); }
+.confirm { display: inline-flex; gap: 6px; align-items: center; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><h1>새싹살롱</h1><span>진행판 · 호스트용</span></div>
+    <nav class="tabs" role="tablist" aria-label="진행 단계">
+      <button role="tab" data-tab="people">참가자</button>
+      <button role="tab" data-tab="rotation">로테이션</button>
+      <button role="tab" data-tab="games">게임</button>
+      <button role="tab" data-tab="signals">물방울 시그널</button>
+      <button role="tab" data-tab="choice">최종 선택</button>
+      <button role="tab" data-tab="result">매칭 결과</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 참가자 -->
+  <section class="panel" id="tab-people" hidden>
+    <div><h2>오늘의 참가자</h2><p class="lead">식물 닉네임과 성별을 입력하세요. 여성은 자리에 고정, 남성이 라운드마다 이동합니다.</p></div>
+    <form class="box row" id="addForm">
+      <input id="newName" placeholder="식물 닉네임 (예: 라벤더)" maxlength="8" required style="flex:1 1 180px">
+      <select id="newGender" aria-label="성별"><option value="F">여</option><option value="M">남</option></select>
+      <button class="btn primary" type="submit">추가</button>
+    </form>
+    <p class="example" id="exampleNote" hidden>지금 보이는 12명은 예시예요. 실제 참가자로 바꿔 쓰세요.</p>
+    <div class="box"><div class="row" style="justify-content:space-between;margin-bottom:10px"><strong>여성 <span id="cntF"></span></strong></div><div class="people" id="listF"></div></div>
+    <div class="box"><div class="row" style="justify-content:space-between;margin-bottom:10px"><strong>남성 <span id="cntM"></span></strong></div><div class="people" id="listM"></div></div>
+    <div class="row">
+      <button class="btn" id="loadSample" type="button">예시 참가자 불러오기</button>
+      <span class="confirm"><button class="btn danger" id="resetAll" type="button">전체 초기화</button><button class="btn danger" id="resetYes" type="button" hidden>정말 초기화</button><button class="btn" id="resetNo" type="button" hidden>취소</button></span>
+    </div>
+  </section>
+
+  <!-- 로테이션 -->
+  <section class="panel" id="tab-rotation" hidden>
+    <div class="box timer">
+      <div class="roundlabel" id="roundLabel"></div>
+      <div class="clock" id="clock">10:00</div>
+      <div class="row" style="justify-content:center">
+        <button class="btn primary" id="startBtn" type="button">시작</button>
+        <button class="btn" id="resetTimer" type="button">시간 되돌리기</button>
+        <button class="btn" id="prevRound" type="button">이전 라운드</button>
+        <button class="btn water" id="nextRound" type="button">다음 라운드</button>
+      </div>
+      <label class="note row" style="justify-content:center">한 라운드 <input id="minutes" type="number" min="1" max="30" style="width:70px"> 분</label>
+    </div>
+    <div class="tables" id="tables"></div>
+    <p class="note">다음 라운드에서 남성은 오른쪽 옆자리로 한 칸 이동해요. 테이블 끝자리에서는 다음 테이블 첫 자리로 넘어갑니다.</p>
+  </section>
+
+  <!-- 게임 -->
+  <section class="panel" id="tab-games" hidden>
+    <div><h2>술 없이 즐기는 게임</h2><p class="lead">덱을 고르고 카드를 뽑으세요. 한 번 나온 카드는 덱을 다 쓸 때까지 다시 나오지 않아요.</p></div>
+    <div class="decks" id="decks"></div>
+    <div class="card" id="card"><p>덱을 고르고 ‘카드 뽑기’를 눌러주세요</p></div>
+    <div class="row"><button class="btn primary" id="drawBtn" type="button">카드 뽑기</button><span class="note" id="deckLeft"></span></div>
+    <p class="note" id="deckRule"></p>
+  </section>
+
+  <!-- 시그널 -->
+  <section class="panel" id="tab-signals" hidden>
+    <div><h2>물방울 시그널</h2><p class="lead">쉬는 시간마다 받은 물방울 스티커 수를 기록하세요. 참가자에게는 숫자만 공개하고, 누가 붙였는지는 비밀이에요.</p></div>
+    <div class="row"><button class="btn" id="hideDrops" type="button">숫자 가리기</button></div>
+    <div class="drops" id="drops"></div>
+  </section>
+
+  <!-- 최종 선택 -->
+  <section class="panel" id="tab-choice" hidden>
+    <div><h2>최종 선택</h2><p class="lead">참가자가 한 명씩 이 화면에서 1·2지망을 고릅니다. 저장하면 입력칸이 비워져서 다음 사람이 볼 수 없어요.</p></div>
+    <form class="box" id="choiceForm" style="display:grid;gap:10px">
+      <label>나는 <select id="who"></select></label>
+      <label>1지망 <select id="pick1"></select></label>
+      <label>2지망 <select id="pick2"></select></label>
+      <div class="row"><button class="btn primary" type="submit">선택 저장</button><span class="note" id="choiceMsg" role="status"></span></div>
+    </form>
+    <div><strong>제출 현황</strong> <span class="note" id="choiceCount"></span></div>
+    <div class="status" id="choiceStatus"></div>
+  </section>
+
+  <!-- 결과 -->
+  <section class="panel" id="tab-result" hidden>
+    <div><h2>매칭 결과</h2><p class="lead">서로를 1·2지망 안에 선택한 경우에만 매칭됩니다. 결과는 호스트가 먼저 확인한 뒤 공개하세요.</p></div>
+    <div class="row"><button class="btn primary" id="revealBtn" type="button">결과 보기</button></div>
+    <div id="results" hidden style="display:grid;gap:10px"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var KEY = 'saessak-salon-v1';
+  var SAMPLE_F = ['라벤더', '수국', '동백', '튤립', '데이지', '민트'];
+  var SAMPLE_M = ['바질', '율마', '올리브', '아이비', '스투키', '선인장'];
+  var DECKS = {
+    ifq: { name: 'OO라면?', desc: '아이스브레이킹', rule: '답을 피하고 싶으면 벌칙 대신 질문을 하나 더 받아요.', cards: [
+      '내가 식물이라면 어떤 식물일까?', '첫 데이트가 비 오는 날이라면?', '갑자기 하루 휴가가 생긴다면?', '로또 1등에 당첨된다면 제일 먼저 할 일은?',
+      '10년 전의 나에게 한마디 할 수 있다면?', '무인도에 하나만 가져갈 수 있다면?', '오늘 저녁 메뉴를 무조건 정해야 한다면?', '내 하루가 영화라면 장르는?',
+      '좋아하는 노래 한 곡만 평생 들어야 한다면?', '여행지를 지금 바로 고를 수 있다면?', '친구가 나를 세 단어로 소개한다면?', '주말 아침 알람이 없다면 몇 시에 일어날까?'] },
+    tele: { name: '텔레파시 게임', desc: '6인 테이블 동시 답하기', rule: '셋 둘 하나에 동시에 답해요. 같은 답이 나온 사람끼리 1점.', cards: [
+      ['여름', '겨울'], ['산', '바다'], ['커피', '차'], ['아침형', '저녁형'], ['집콕', '밖순이·밖돌이'], ['카톡', '전화'],
+      ['계획 여행', '즉흥 여행'], ['강아지', '고양이'], ['짜장', '짬뽕'], ['영화관', '집에서 OTT'], ['먼저 연락', '기다리기'], ['단 디저트', '짠 간식']] },
+    truth: { name: '진실 혹은 새싹', desc: '진실게임 변형', rule: '답하기 싫으면 새싹 카드를 내고, 대신 상대에게 칭찬 한마디를 해요.', cards: [
+      '가장 최근에 설렜던 순간은?', '이상형을 세 단어로 말한다면?', '연애할 때 가장 중요한 한 가지는?', '첫인상과 실제가 가장 다르다는 말을 들은 적은?',
+      '요즘 가장 많이 듣는 노래는?', '나의 의외의 취미는?', '스트레스를 푸는 나만의 방법은?', '꼭 해보고 싶은 데이트는?', '오늘 이 자리에 오기 전 기분은?', '최근에 나를 웃게 한 일은?'] },
+    plant: { name: '나와 닮은 식물', desc: '서로에게 식물 골라주기', rule: '카드의 식물이 어울리는 사람을 골라주고 이유를 말해요.', cards: [
+      '해바라기 (밝고 긍정적인 사람)', '선인장 (겉은 단단, 속은 따뜻한 사람)', '라벤더 (곁에 있으면 편안한 사람)', '몬스테라 (존재감 있는 사람)',
+      '민트 (상쾌하고 톡 쏘는 매력)', '율마 (차분하고 단정한 사람)', '동백 (은근히 강인한 사람)', '아이비 (어디서든 잘 어울리는 사람)', '튤립 (첫눈에 반하게 하는 사람)', '바질 (곁에 두면 일상이 맛있어지는 사람)'] }
+  };
+
+  function load() { try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.people) return s; } catch (e) {} return null; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function uid() { return Math.random().toString(36).slice(2, 9); }
+  function sample() {
+    return { people: SAMPLE_F.map(function (n) { return { id: uid(), name: n, g: 'F' }; }).concat(SAMPLE_M.map(function (n) { return { id: uid(), name: n, g: 'M' }; })),
+      sample: true, minutes: 10, round: 0, drops: {}, choices: {}, tab: 'people', deck: 'ifq', used: {} };
+  }
+  var state = load() || sample();
+  var $ = function (id) { return document.getElementById(id); };
+  var byId = function (id) { return state.people.filter(function (p) { return p.id === id; })[0]; };
+  var women = function () { return state.people.filter(function (p) { return p.g === 'F'; }); };
+  var men = function () { return state.people.filter(function (p) { return p.g === 'M'; }); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* tabs */
+  function showTab(t) {
+    state.tab = t; save();
+    document.querySelectorAll('nav.tabs button').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+    document.querySelectorAll('section.panel').forEach(function (s) { s.hidden = s.id !== 'tab-' + t; });
+    render();
+  }
+  document.querySelectorAll('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { showTab(b.dataset.tab); }); });
+
+  /* people */
+  function renderPeople() {
+    ['F', 'M'].forEach(function (g) {
+      var list = state.people.filter(function (p) { return p.g === g; });
+      $('cnt' + g).textContent = list.length + '명';
+      $('list' + g).innerHTML = list.map(function (p, i) {
+        return '<div class="person"><span><span class="tag ' + (g === 'F' ? 'f' : '') + '">' + (g === 'F' ? '여' : '남') + (i + 1) + '</span> <b>' + esc(p.name) + '</b></span><button class="x" data-del="' + p.id + '" aria-label="' + esc(p.name) + ' 삭제">×</button></div>';
+      }).join('') || '<span class="note">아직 없어요</span>';
+    });
+    $('exampleNote').hidden = !state.sample;
+  }
+  $('addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var n = $('newName').value.trim(); if (!n) return;
+    var g = $('newGender').value;
+    if (state.people.filter(function (p) { return p.g === g; }).length >= 6) { $('newName').setCustomValidity('한 성별은 최대 6명까지예요'); $('newName').reportValidity(); return; }
+    if (state.sample) { state.people = []; state.sample = false; state.drops = {}; state.choices = {}; state.round = 0; }
+    state.people.push({ id: uid(), name: n, g: g }); $('newName').value = ''; save(); render();
+  });
+  $('newName').addEventListener('input', function () { this.setCustomValidity(''); });
+  document.addEventListener('click', function (e) {
+    var d = e.target.closest('[data-del]'); if (!d) return;
+    state.people = state.people.filter(function (p) { return p.id !== d.dataset.del; });
+    delete state.drops[d.dataset.del]; delete state.choices[d.dataset.del]; save(); render();
+  });
+  $('loadSample').addEventListener('click', function () { var t = state.tab; state = sample(); state.tab = t; save(); render(); });
+  $('resetAll').addEventListener('click', function () { $('resetYes').hidden = false; $('resetNo').hidden = false; this.hidden = true; });
+  $('resetNo').addEventListener('click', function () { $('resetYes').hidden = true; this.hidden = true; $('resetAll').hidden = false; });
+  $('resetYes').addEventListener('click', function () {
+    state = { people: [], sample: false, minutes: state.minutes, round: 0, drops: {}, choices: {}, tab: 'people', deck: 'ifq', used: {} };
+    $('resetYes').hidden = true; $('resetNo').hidden = true; $('resetAll').hidden = false; stopTimer(); save(); render();
+  });
+
+  /* rotation */
+  function slots() { var n = Math.max(women().length, men().length); return n; }
+  function pairsFor(r) {
+    var W = women(), M = men(), n = slots(), out = [];
+    for (var k = 0; k < n; k++) { out.push({ w: W[k] || null, m: n ? (M[(k - r + n) % n] || null) : null }); }
+    return out;
+  }
+  function renderRotation() {
+    var n = slots();
+    if (!n) { $('tables').innerHTML = '<div class="box note">참가자를 먼저 입력해 주세요.</div>'; $('roundLabel').textContent = ''; return; }
+    if (state.round >= n) state.round = n - 1;
+    $('roundLabel').textContent = 'ROUND ' + (state.round + 1) + ' / ' + n;
+    var ps = pairsFor(state.round), html = '';
+    for (var t = 0; t < Math.ceil(n / 3); t++) {
+      html += '<div class="box table"><h3>테이블 ' + (t + 1) + '</h3>';
+      ps.slice(t * 3, t * 3 + 3).forEach(function (p, i) {
+        var seat = t * 3 + i + 1;
+        html += '<div class="pair"><span>' + (p.w ? '<span class="tag f">자리 ' + seat + '</span> ' + esc(p.w.name) : '<span class="rest">빈자리</span>') + '</span><span class="mid">마주 보기</span><span class="r">' + (p.m ? esc(p.m.name) : '<span class="rest">휴식</span>') + '</span></div>';
+      });
+      html += '</div>';
+    }
+    $('tables').innerHTML = html;
+    $('prevRound').disabled = state.round === 0;
+    $('nextRound').disabled = state.round >= n - 1;
+    $('minutes').value = state.minutes;
+  }
+  var remaining = state.minutes * 60, endAt = 0, ticker = null, audio = null, wake = null;
+  function fmt(s) { s = Math.max(0, Math.ceil(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function paintClock() { $('clock').textContent = fmt(remaining); $('clock').classList.toggle('done', remaining <= 0); $('startBtn').textContent = ticker ? '일시정지' : (remaining <= 0 ? '다시 시작' : '시작'); }
+  function beep() {
+    if (!audio) return;
+    [0, 0.35, 0.7].forEach(function (t) {
+      var o = audio.createOscillator(), g = audio.createGain(); o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(0.0001, audio.currentTime + t); g.gain.exponentialRampToValueAtTime(0.3, audio.currentTime + t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.25);
+      o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.3);
+    });
+  }
+  function stopTimer() { if (ticker) clearInterval(ticker); ticker = null; if (wake) { try { wake.release(); } catch (e) {} wake = null; } paintClock(); }
+  $('startBtn').addEventListener('click', function () {
+    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (ticker) { remaining = (endAt - Date.now()) / 1000; stopTimer(); return; }
+    if (remaining <= 0) remaining = state.minutes * 60;
+    endAt = Date.now() + remaining * 1000;
+    try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (w) { wake = w; }).catch(function () {}); } catch (e) {}
+    ticker = setInterval(function () {
+      remaining = (endAt - Date.now()) / 1000;
+      if (remaining <= 0) { remaining = 0; stopTimer(); beep(); }
+      paintClock();
+    }, 250);
+    paintClock();
+  });
+  function resetClock() { stopTimer(); remaining = state.minutes * 60; paintClock(); }
+  $('resetTimer').addEventListener('click', resetClock);
+  $('nextRound').addEventListener('click', function () { state.round = Math.min(state.round + 1, slots() - 1); save(); resetClock(); renderRotation(); });
+  $('prevRound').addEventListener('click', function () { state.round = Math.max(state.round - 1, 0); save(); resetClock(); renderRotation(); });
+  $('minutes').addEventListener('change', function () { var v = parseInt(this.value, 10); if (v >= 1 && v <= 30) { state.minutes = v; save(); if (!ticker) resetClock(); } });
+
+  /* games */
+  function renderGames() {
+    $('decks').innerHTML = Object.keys(DECKS).map(function (k) {
+      return '<button class="deck" type="button" data-deck="' + k + '" aria-pressed="' + (state.deck === k) + '"><strong>' + DECKS[k].name + '</strong><small>' + DECKS[k].desc + '</small></button>';
+    }).join('');
+    var d = DECKS[state.deck], used = state.used[state.deck] || [];
+    $('deckLeft').textContent = '남은 카드 ' + (d.cards.length - used.length) + '장';
+    $('deckRule').textContent = d.rule;
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-deck]'); if (!b) return;
+    state.deck = b.dataset.deck; save(); $('card').innerHTML = '<p>‘카드 뽑기’를 눌러주세요</p>'; renderGames();
+  });
+  $('drawBtn').addEventListener('click', function () {
+    var d = DECKS[state.deck], used = state.used[state.deck] || [];
+    if (used.length >= d.cards.length) used = [];
+    var left = d.cards.map(function (_, i) { return i; }).filter(function (i) { return used.indexOf(i) < 0; });
+    var pick = left[Math.floor(Math.random() * left.length)];
+    used.push(pick); state.used[state.deck] = used; save();
+    var c = d.cards[pick];
+    $('card').innerHTML = Array.isArray(c) ? '<p>' + esc(c[0]) + '<span class="vs">vs</span>' + esc(c[1]) + '</p>' : '<p>' + esc(c) + '</p>';
+    renderGames();
+  });
+
+  /* signals */
+  var dropsHidden = false;
+  function renderSignals() {
+    $('drops').innerHTML = state.people.map(function (p) {
+      var c = state.drops[p.id] || 0;
+      return '<div class="drop"><div><span class="tag ' + (p.g === 'F' ? 'f' : '') + '">' + (p.g === 'F' ? '여' : '남') + '</span> <b>' + esc(p.name) + '</b></div><div class="row"><span class="count">' + (dropsHidden ? '•' : c) + '</span><span class="row"><button class="btn" data-drop="' + p.id + '" data-d="-1" aria-label="' + esc(p.name) + ' 물방울 빼기">−</button><button class="btn water" data-drop="' + p.id + '" data-d="1" aria-label="' + esc(p.name) + ' 물방울 더하기">+</button></span></div></div>';
+    }).join('') || '<div class="box note">참가자를 먼저 입력해 주세요.</div>';
+    $('hideDrops').textContent = dropsHidden ? '숫자 보이기' : '숫자 가리기';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-drop]'); if (!b) return;
+    var id = b.dataset.drop; state.drops[id] = Math.max(0, (state.drops[id] || 0) + parseInt(b.dataset.d, 10)); save(); renderSignals();
+  });
+  $('hideDrops').addEventListener('click', function () { dropsHidden = !dropsHidden; renderSignals(); });
+
+  /* choice */
+  function opts(list, empty) { return '<option value="">' + empty + '</option>' + list.map(function (p) { return '<option value="' + p.id + '">' + esc(p.name) + '</option>'; }).join(''); }
+  function renderChoiceTargets() {
+    var me = byId($('who').value), others = me ? state.people.filter(function (p) { return p.g !== me.g; }) : [];
+    $('pick1').innerHTML = opts(others, me ? '선택하세요' : '먼저 나를 고르세요');
+    $('pick2').innerHTML = opts(others, '선택 안 함');
+  }
+  function renderChoice() {
+    var cur = $('who').value;
+    $('who').innerHTML = opts(state.people, '닉네임 선택');
+    if (byId(cur)) $('who').value = cur;
+    renderChoiceTargets();
+    var done = state.people.filter(function (p) { return state.choices[p.id]; }).length;
+    $('choiceCount').textContent = done + ' / ' + state.people.length + '명 제출';
+    $('choiceStatus').innerHTML = state.people.map(function (p) { var ok = !!state.choices[p.id]; return '<div class="' + (ok ? 'ok' : '') + '">' + (ok ? '✓ ' : '· ') + esc(p.name) + '</div>'; }).join('');
+  }
+  $('who').addEventListener('change', function () { $('choiceMsg').textContent = ''; renderChoiceTargets(); });
+  $('choiceForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var me = $('who').value, a = $('pick1').value, b = $('pick2').value;
+    if (!me || !a) { $('choiceMsg').textContent = '나와 1지망을 골라주세요.'; return; }
+    if (a === b) { $('choiceMsg').textContent = '1지망과 2지망을 다르게 골라주세요.'; return; }
+    state.choices[me] = [a, b].filter(Boolean); save();
+    $('who').value = ''; $('choiceMsg').textContent = '저장했어요. 다음 분께 넘겨주세요.'; renderChoice();
+  });
+
+  /* results */
+  var revealed = false;
+  function matches() {
+    var out = [], seen = {};
+    state.people.forEach(function (p) {
+      (state.choices[p.id] || []).forEach(function (q, ri) {
+        var back = state.choices[q] || [], rj = back.indexOf(p.id), key = [p.id, q].sort().join('|');
+        if (rj >= 0 && !seen[key] && byId(q)) { seen[key] = 1; out.push({ a: p, b: byId(q), ra: ri + 1, rb: rj + 1 }); }
+      });
+    });
+    return out.sort(function (x, y) { return (x.ra + x.rb) - (y.ra + y.rb); });
+  }
+  function renderResult() {
+    $('revealBtn').textContent = revealed ? '결과 가리기' : '결과 보기';
+    $('results').hidden = !revealed;
+    if (!revealed) return;
+    var ms = matches(), count = {};
+    ms.forEach(function (m) { count[m.a.id] = (count[m.a.id] || 0) + 1; count[m.b.id] = (count[m.b.id] || 0) + 1; });
+    var submitted = state.people.filter(function (p) { return state.choices[p.id]; }).length;
+    var html = '<p class="note">' + submitted + '명 제출 · 매칭 ' + ms.length + '쌍</p>';
+    html += ms.map(function (m) {
+      var dup = count[m.a.id] > 1 || count[m.b.id] > 1;
+      return '<div class="couple"><span class="names">' + esc(m.a.name) + ' 🌱 ' + esc(m.b.name) + '</span><span class="note">' + m.ra + '지망 × ' + m.rb + '지망' + (dup ? ' · <b style="color:var(--warn)">중복 매칭, 호스트 확인 필요</b>' : '') + '</span></div>';
+    }).join('') || '<div class="box note">아직 서로 선택한 쌍이 없어요.</div>';
+    $('results').innerHTML = html;
+  }
+  $('revealBtn').addEventListener('click', function () { revealed = !revealed; renderResult(); });
+
+  function render() { renderPeople(); renderRotation(); renderGames(); renderSignals(); renderChoice(); renderResult(); paintClock(); }
+  remaining = state.minutes * 60;
+  showTab(state.tab || 'people');
+})();
+</script>
+
+</body>
+</html>
